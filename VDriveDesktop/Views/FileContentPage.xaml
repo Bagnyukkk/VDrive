@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:VDriveDesktop.ViewModels"
+             x:Class="VDriveDesktop.Views.FileContentPage"
+             x:DataType="viewModels:FileContentViewModel"
+             Title="{Binding FileName}"
+             BackgroundColor="#1e1e1e">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20">
+            <!--.c -->
+            <Editor Text="{Binding TextContent}" 
+                    IsVisible="{Binding IsTextVisible}" 
+                    IsReadOnly="True" 
+                    AutoSize="TextChanges"
+                    BackgroundColor="#2d2d2d"
+                    TextColor="White"
+                    FontFamily="Courier New"/>
+
+            <!-- .jpg -->
+            <Image Source="{Binding ImageContent}" 
+                   IsVisible="{Binding IsImageVisible}"
+                   Aspect="AspectFit"/>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

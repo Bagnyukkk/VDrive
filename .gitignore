@@ -1,0 +1,160 @@
+# ===================================================================
+# General Visual Studio, Rider, and JetBrains artifacts
+# ===================================================================
+## Covers Visual Studio, VS Code, Rider, and other JetBrains IDEs
+*.sln.DotSettings.user
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.vspscc
+*_i.c
+*_p.c
+*.ncb
+*.opendb
+*.sdf
+*.cache
+*.pdb
+*.obj
+*.obj.enc
+*.ilk
+*.aps
+*.tlog
+*.log
+*.vsix
+*.vspackage
+*.vsixmanifest
+*.DotSettings
+*.csproj.user
+*.vcxproj.filters
+*.pubxml
+*.pubxml.user
+
+# Visual Studio 2017 cache/options directory
+.vs/
+
+# Visual Studio 2019/2022 cache/options directory
+.vsconfig
+
+# Rider temporary files
+.idea/
+
+# ===================================================================
+# Build files and directories
+# ===================================================================
+## Ignore all bin and obj folders, which store compiled output
+[Bb]in/
+[Oo]bj/
+[Rr]elease/
+[Dd]ebug/
+[Rr]eleases/
+x64/
+x86/
+build/
+Build/
+bld/
+[Bb]uild[Ss]cripts/
+artifacts/
+
+# ===================================================================
+# ASP.NET Core Web API & Razor Pages Specific
+# ===================================================================
+## User secrets file (contains sensitive data, should never be committed)
+**/secrets.json
+secrets.json
+
+## IIS Express settings
+**/applicationhost.config
+
+## Publishing profiles
+**/Properties/PublishProfiles/
+**/Properties/launchSettings.json
+
+## Client-side library manager
+/libman.json
+/lib/
+
+## Entity Framework Core migration files (optional, but often ignored in team environments
+## where migrations are managed via a central database or script)
+# Migrations/
+
+# ===================================================================
+# .NET MAUI Specific
+# ===================================================================
+## Platform-specific build artifacts for MAUI
+**/[Pp]latforms/[Aa]ndroid/[Bb]in/
+**/[Pp]latforms/[Aa]ndroid/[Oo]bj/
+**/[Pp]latforms/[Ii][Oo][Ss]/[Bb]in/
+**/[Pp]latforms/[Ii][Oo][Ss]/[Oo]bj/
+**/[Pp]latforms/[Mm]ac[Cc]atalyst/[Bb]in/
+**/[Pp]latforms/[Mm]ac[Cc]atalyst/[Oo]bj/
+**/[Pp]latforms/[Ww]indows/[Bb]in/
+**/[Pp]latforms/[Ww]indows/[Oo]bj/
+**/[Pp]latforms/[Tt]izen/[Bb]in/
+**/[Pp]latforms/[Tt]izen/[Oo]bj/
+
+## .NET MAUI resources packaging directory
+**/Resources/Raw/
+
+# ===================================================================
+# Operating System files
+# ===================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+*.lnk
+
+# ===================================================================
+# Other common files to ignore
+# ===================================================================
+## Dependency directories
+node_modules/
+jspm_packages/
+bower_components/
+
+## Test results
+/TestResults/
+*.trx
+
+## Code coverage reports
+*.cover
+*.coverlet.json
+coverage.cobertura.xml
+
+## Runtime files
+*.runtimeconfig.json
+*.runtimeconfig.dev.json
+
+## Crash dumps
+*.mdmp
+*.dmp
+
+## Performance files
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+## Environment files
+.env
+.env.*
+!.env.example
+
+# ===================================================================
+# Package manager caches
+# ===================================================================
+## NuGet packages folder
+*.nuget.props
+*.nuget.targets
+/packages/
+!/packages/repositories.config
+
+# If you are using Paket, you can uncomment the following lines
+# .paket/paket.exe
+# paket-files/

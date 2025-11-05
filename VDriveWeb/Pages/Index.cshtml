@@ -1,0 +1,295 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Мій Віртуальний Диск (VDrive)";
+}
+
+<style>
+    .clickable-row {
+        cursor: pointer;
+    }
+</style>
+
+<h1 class="mb-4">Мій Віртуальний Диск</h1>
+
+@if (!string.IsNullOrEmpty(Model.StatusMessage))
+{
+    <div class="alert alert-info" role="alert">
+        @Model.StatusMessage
+    </div>
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center flex-wrap">
+        <div class="btn-group me-3 mb-2" role="group" aria-label="Фільтрація за типом">
+            <a asp-page="Index" asp-route-filter="all" class="btn btn-sm @(Model.CurrentFilter == "all" ? "btn-primary" : "btn-outline-secondary")">Усі</a>
+            <a asp-page="Index" asp-route-filter="cpp" class="btn btn-sm @(Model.CurrentFilter == "cpp" ? "btn-primary" : "btn-outline-secondary")">.cpp</a>
+            <a asp-page="Index" asp-route-filter="jpg" class="btn btn-sm @(Model.CurrentFilter == "jpg" ? "btn-primary" : "btn-outline-secondary")">.jpg</a>
+        </div>
+
+        <div class="btn-group me-3 mb-2" role="group" aria-label="Напрямок сортування">
+            <a asp-page="Index"
+               asp-route-order="asc"
+               asp-route-sortBy="@Model.CurrentSort"
+               asp-route-filter="@Model.CurrentFilter"
+               class="btn btn-sm @(Model.CurrentOrder == "asc" ? "btn-primary" : "btn-outline-secondary")"
+               title="Сортувати за зростанням">
+                <i class="bi bi-sort-up"></i> За зростанням
+            </a>
+            <a asp-page="Index"
+               asp-route-order="desc"
+               asp-route-sortBy="@Model.CurrentSort"
+               asp-route-filter="@Model.CurrentFilter"
+               class="btn btn-sm @(Model.CurrentOrder == "desc" ? "btn-primary" : "btn-outline-secondary")"
+               title="Сортувати за спаданням">
+                <i class="bi bi-sort-down"></i> За спаданням
+            </a>
+        </div>
+    </div>
+
+
+
+    <div class="d-flex align-items-center flex-wrap" id="columnToggleCheckboxes">
+        <div class="form-check me-3">
+            <input class="form-check-input column-toggle-checkbox" type="checkbox" id="check-all" onchange="toggleAllColumns(this)">
+            <label class="form-check-label" for="check-all">Всі поля</label>
+        </div>
+
+        <div class="form-check me-3">
+            <input class="form-check-input column-toggle-checkbox specific-column-checkbox" type="checkbox" id="check-created" data-column-class="column-created" onchange="toggleSpecificColumn(this)">
+            <label class="form-check-label" for="check-created">Створення</label>
+        </div>
+
+        <div class="form-check me-3">
+            <input class="form-check-input column-toggle-checkbox specific-column-checkbox" type="checkbox" id="check-modified" data-column-class="column-modified" onchange="toggleSpecificColumn(this)">
+            <label class="form-check-label" for="check-modified">Зміна</label>
+        </div>
+
+        <div class="form-check me-3">
+            <input class="form-check-input column-toggle-checkbox specific-column-checkbox" type="checkbox" id="check-uploader" data-column-class="column-uploader" onchange="toggleSpecificColumn(this)">
+            <label class="form-check-label" for="check-uploader">Завантажив</label>
+        </div>
+
+        <div class="form-check me-3">
+            <input class="form-check-input column-toggle-checkbox specific-column-checkbox" type="checkbox" id="check-editor" data-column-class="column-editor" onchange="toggleSpecificColumn(this)">
+            <label class="form-check-label" for="check-editor">Редагував</label>
+        </div>
+    </div>
+</div>
+
+<!-- Таблиця файлів -->
+<table class="table table-hover table-striped">
+    <thead>
+        <tr>
+            <th>
+                Назва файлу
+                <a asp-page="Index" asp-route-sortBy="filename" asp-route-order="@(Model.CurrentSort == "filename" && Model.CurrentOrder == "asc" ? "desc" : "asc")"
+                   asp-route-filter="@Model.CurrentFilter">
+                    <i class="bi @(Model.CurrentSort == "filename" ? (Model.CurrentOrder == "asc" ? "bi-sort-alpha-down" : "bi-sort-alpha-up") : "bi-sort-alpha-down-alt")"></i>
+                </a>
+            </th>
+            <th class="column-created">
+                Дата створення
+                <a asp-page="Index" asp-route-sortBy="createdat" asp-route-order="@(Model.CurrentSort == "createdat" && Model.CurrentOrder == "asc" ? "desc" : "asc")"
+                   asp-route-filter="@Model.CurrentFilter">
+                    <i class="bi @(Model.CurrentSort == "createdat" ? (Model.CurrentOrder == "asc" ? "bi-sort-down" : "bi-sort-up") : "bi-sort-down-alt")"></i>
+                </a>
+            </th>
+            <th class="column-modified">
+                Дата зміни
+                <a asp-page="Index" asp-route-sortBy="lastmodifiedat" asp-route-order="@(Model.CurrentSort == "lastmodifiedat" && Model.CurrentOrder == "asc" ? "desc" : "asc")"
+                   asp-route-filter="@Model.CurrentFilter">
+                    <i class="bi @(Model.CurrentSort == "lastmodifiedat" ? (Model.CurrentOrder == "asc" ? "bi-sort-down" : "bi-sort-up") : "bi-sort-down-alt")"></i>
+                </a>
+            </th>
+            <th class="column-uploader">Хто завантажив</th>
+            <th class="column-editor">Хто редагував</th>
+            <th>Дії</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Files)
+        {
+            bool isViewable = item.FileType != null &&
+            (item.FileType.Equals(".c", StringComparison.OrdinalIgnoreCase) ||
+            item.FileType.Equals(".jpg", StringComparison.OrdinalIgnoreCase));
+
+            if (isViewable)
+            {
+                <tr class="clickable-row"
+                    data-file-id="@item.FileId"
+                    data-file-name="@item.FileName"
+                    data-file-type="@item.FileType"
+                    ondblclick="viewFile(this)">
+                    <td>@Html.DisplayFor(modelItem => item.FileName)</td>
+                    <td class="column-created" style="display:none">@Html.DisplayFor(modelItem => item.CreationDate)</td>
+                    <td class="column-modified" style="display:none">@Html.DisplayFor(modelItem => item.ModificationDate)</td>
+                    <td class="column-uploader" style="display:none">@Html.DisplayFor(modelItem => item.UploaderName)</td>
+                    <td class="column-editor" style="display:none">@Html.DisplayFor(modelItem => item.LastEditorName)</td>
+                    <td>
+                        <form method="post" asp-page-handler="Download" class="d-inline">
+                            <input type="hidden" name="downloadFileId" value="@item.FileId" />
+                            <input type="hidden" name="downloadFileName" value="@item.FileName" />
+                            <button type="submit" class="btn btn-sm btn-primary">Завантажити</button>
+                        </form>
+
+                        <form method="post" asp-page-handler="Delete" class="d-inline" onsubmit="return confirm('Ви впевнені, що хочете видалити файл @item.FileName?');">
+                            <input type="hidden" name="deleteFileId" value="@item.FileId" />
+                            <input type="hidden" name="deleteFileName" value="@item.FileName" />
+                            <button type="submit" class="btn btn-sm btn-danger">Видалити</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.FileName)</td>
+                    <td class="column-created" style="display:none">@Html.DisplayFor(modelItem => item.CreationDate)</td>
+                    <td class="column-modified" style="display:none">@Html.DisplayFor(modelItem => item.ModificationDate)</td>
+                    <td class="column-uploader" style="display:none">@Html.DisplayFor(modelItem => item.UploaderName)</td>
+                    <td class="column-editor" style="display:none">@Html.DisplayFor(modelItem => item.LastEditorName)</td>
+                    <td>
+                        <form method="post" asp-page-handler="Download" class="d-inline">
+                            <input type="hidden" name="downloadFileId" value="@item.FileId" />
+                            <input type="hidden" name="downloadFileName" value="@item.FileName" />
+                            <button type="submit" class="btn btn-sm btn-primary">Завантажити</button>
+                        </form>
+
+                        <form method="post" asp-page-handler="Delete" class="d-inline" onsubmit="return confirm('Ви впевнені, що хочете видалити файл @item.FileName?');">
+                            <input type="hidden" name="deleteFileId" value="@item.FileId" />
+                            <input type="hidden" name="deleteFileName" value="@item.FileName" />
+                            <button type="submit" class="btn btn-sm btn-danger">Видалити</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<!-- Drag-n-Drop -->
+<div class="card mb-4">
+    <div class="card-header">Завантаження файлів</div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" asp-page-handler="Upload" id="uploadForm">
+            <input type="file" asp-for="UploadedFile" id="fileInput" class="form-control mb-3" required />
+
+            <div id="dropZone" class="text-center p-5 border border-dashed rounded mb-3 bg-light"
+                 style="cursor: pointer; border-style: dashed!important;">
+                Перетягніть файли сюди або натисніть, щоб вибрати.
+            </div>
+
+            <button type="submit" class="btn btn-success" id="uploadButton">Завантажити</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const allColumnClasses = [
+            'column-created',
+            'column-modified',
+            'column-uploader',
+            'column-editor',
+            'column-size'
+        ];
+
+        function setColumnVisibility(className, isVisible) {
+            document.querySelectorAll('.' + className).forEach(function(el) {
+                el.style.display = isVisible ? 'table-cell' : 'none';
+            });
+        }
+
+        function toggleSpecificColumn(checkbox) {
+            const columnClass = checkbox.getAttribute('data-column-class');
+            const isVisible = checkbox.checked;
+
+            setColumnVisibility(columnClass, isVisible);
+
+            if (document.getElementById('check-all').checked) {
+                 document.getElementById('check-all').checked = false;
+            }
+        }
+
+        function toggleAllColumns(checkbox) {
+            const isChecked = checkbox.checked;
+
+            allColumnClasses.forEach(className => {
+                setColumnVisibility(className, isChecked);
+            });
+
+            document.querySelectorAll('.specific-column-checkbox').forEach(specificCheckbox => {
+                specificCheckbox.checked = isChecked;
+            });
+        }
+
+                document.addEventListener('DOMContentLoaded', function() {
+            const checkAllCheckbox = document.getElementById('check-all');
+
+            checkAllCheckbox.checked = true;
+
+            toggleAllColumns(checkAllCheckbox);
+        });
+    </script>
+
+    <script>
+        function viewFile(rowElement) {
+            const fileId = rowElement.getAttribute('data-file-id');
+            const fileName = rowElement.getAttribute('data-file-name');
+            const fileType = rowElement.getAttribute('data-file-type');
+
+            if (fileId && fileName && fileType) {
+                const url = `/File/View?id=${fileId}&fileName=${encodeURIComponent(fileName)}&fileType=${encodeURIComponent(fileType)}`;
+
+                window.location.href = url;
+            }
+        }
+    </script>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const uploadForm = document.getElementById('uploadForm');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false)
+        });
+
+        function preventDefaults (e) {
+            e.preventDefault()
+            e.stopPropagation()
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('bg-secondary', 'text-white'), false)
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('bg-secondary', 'text-white'), false)
+        });
+
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            let dt = e.dataTransfer;
+            let files = dt.files;
+
+            if (files.length > 0) {
+                fileInput.files = files;
+
+                uploadForm.submit();
+            }
+        }
+
+        fileInput.addEventListener('change', () => {
+            if(fileInput.files.length > 0) {
+                dropZone.innerHTML = `Вибрано файл: <strong>${fileInput.files[0].name}</strong>`;
+            } else {
+                 dropZone.innerHTML = 'Перетягніть файли сюди або натисніть, щоб вибрати.';
+            }
+        });
+    </script>
+}

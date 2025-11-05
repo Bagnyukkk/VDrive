@@ -1,0 +1,90 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:VDriveDesktop.ViewModels"
+             x:Class="VDriveDesktop.Views.LoginPage"
+             x:DataType="viewModels:LoginViewModel"
+             Title="Вхід до VDrive"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#1e1e1e">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="AuthEntryStyle" TargetType="Entry">
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="PlaceholderColor" Value="Gray" />
+                <Setter Property="BackgroundColor" Value="#2a2a2a" />
+                <Setter Property="HeightRequest" Value="50" />
+                <Setter Property="FontSize" Value="16" />
+            </Style>
+
+            <Style x:Key="AuthButtonStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#6a35ff" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="CornerRadius" Value="25" />
+                <Setter Property="HeightRequest" Value="50" />
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
+
+            <Style x:Key="TitleLabelStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="48" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="HorizontalOptions" Value="Center" />
+            </Style>
+
+            <Style x:Key="LinkTextStyle" TargetType="Span">
+                <Setter Property="TextColor" Value="#8c61ff" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextDecorations" Value="Underline" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid VerticalOptions="Center" 
+          HorizontalOptions="Center" 
+          RowSpacing="20" 
+          WidthRequest="350">
+
+        <VerticalStackLayout Spacing="15">
+            <Label Text="VDrive" 
+                   Style="{StaticResource TitleLabelStyle}" 
+                   Margin="0,0,0,30"/>
+
+            <Frame BackgroundColor="#2a2a2a" CornerRadius="10" Padding="15,5" BorderColor="Transparent">
+                <Entry Placeholder="Ім'я користувача" 
+                       Text="{Binding Username}" 
+                       Style="{StaticResource AuthEntryStyle}" />
+            </Frame>
+
+            <Frame BackgroundColor="#2a2a2a" CornerRadius="10" Padding="15,5" BorderColor="Transparent">
+                <Entry Placeholder="Пароль" 
+                       IsPassword="True" 
+                       Text="{Binding Password}" 
+                       Style="{StaticResource AuthEntryStyle}" />
+            </Frame>
+
+            <Button Text="Увійти" 
+                    Command="{Binding LoginCommand}" 
+                    Style="{StaticResource AuthButtonStyle}"
+                    Margin="0,15,0,0"/>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="#6a35ff" HorizontalOptions="Center" />
+
+            <Label Text="{Binding ErrorMessage}" TextColor="#ff4d4d" HorizontalOptions="Center" />
+
+            <Label HorizontalOptions="Center" Margin="0,20,0,0">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="Doesn't have an account? " TextColor="Gray"/>
+                        <Span Text="Register" Style="{StaticResource LinkTextStyle}">
+                            <Span.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding GoToRegisterCommand}" />
+                            </Span.GestureRecognizers>
+                        </Span>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

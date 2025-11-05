@@ -1,0 +1,50 @@
+﻿@page
+@model VDriveWeb.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Вхід до VDrive";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <h2 class="text-center mb-4">Вхід</h2>
+
+        @if (!string.IsNullOrEmpty(Model.Message) && !Model.Message.Contains("Помилка"))
+        {
+            <div class="alert alert-success" role="alert">
+                @Model.Message
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(Model.Message) && Model.Message.Contains("Помилка"))
+        {
+            <div class="alert alert-danger" role="alert">
+                @Model.Message
+            </div>
+        }
+
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="LoginInput.Username"></label>
+                <input asp-for="LoginInput.Username" class="form-control" />
+                <span asp-validation-for="LoginInput.Username" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="LoginInput.Password"></label>
+                <input asp-for="LoginInput.Password" class="form-control" />
+                <span asp-validation-for="LoginInput.Password" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Увійти</button>
+        </form>
+
+        <p class="mt-3 text-center">
+            Ще не зареєстровані? <a asp-page="/Account/Register">Створити обліковий запис</a>
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

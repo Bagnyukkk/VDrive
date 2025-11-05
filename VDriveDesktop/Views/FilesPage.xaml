@@ -1,0 +1,131 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:VDriveDesktop.ViewModels"
+             xmlns:models="clr-namespace:VDriveDesktop.Models"
+             xmlns:converters="clr-namespace:VDriveDesktop.Converters"
+             x:Class="VDriveDesktop.Views.FilesPage"
+             x:DataType="viewModels:FilesViewModel"
+             Title="VDriveDesktop"
+             x:Name="filesPage">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:BoolToGridLengthConverter x:Key="BoolToGridLength" />
+
+            <Style x:Key="FilterButtonStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#4a4a4a" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="CornerRadius" Value="20" />
+                <Setter Property="HeightRequest" Value="40" />
+                <Setter Property="Margin" Value="5,0"/>
+            </Style>
+
+            <Style x:Key="ActionButtonStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#6200ee" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="CornerRadius" Value="25" />
+                <Setter Property="HeightRequest" Value="50" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="Padding" Value="20,0" />
+            </Style>
+
+            <Style x:Key="LogoutButtonStyle" TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
+                <Setter Property="BackgroundColor" Value="#d9534f" />
+                <Setter Property="Padding" Value="15,0" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*,Auto" BackgroundColor="#1e1e1e" Padding="10">
+
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto">
+
+            <ScrollView Grid.Column="0" Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                <StackLayout Orientation="Horizontal" Padding="10,0" Spacing="10">
+                    <Button Text="Sort Asc" Command="{Binding SortCommand}" CommandParameter="asc" Style="{StaticResource FilterButtonStyle}" />
+                    <Button Text="Sort Desc" Command="{Binding SortCommand}" CommandParameter="desc" Style="{StaticResource FilterButtonStyle}" />
+
+                    <Button Text="All Files" Command="{Binding FilterCommand}" CommandParameter="all" Style="{StaticResource FilterButtonStyle}" />
+                    <Button Text=".cpp" Command="{Binding FilterCommand}" CommandParameter="cpp" Style="{StaticResource FilterButtonStyle}" />
+                    <Button Text=".png" Command="{Binding FilterCommand}" CommandParameter="png" Style="{StaticResource FilterButtonStyle}" />
+                </StackLayout>
+            </ScrollView>
+
+            <Button Grid.Column="1" 
+                    Text="Toggle Details" 
+                    Command="{Binding ToggleDetailsCommand}" 
+                    Style="{StaticResource FilterButtonStyle}"
+                    VerticalOptions="Center"/>
+
+            <Button Grid.Column="2" 
+                    Text="Log Out" 
+                    Command="{Binding LogoutCommand}" 
+                    Style="{StaticResource LogoutButtonStyle}"
+                    VerticalOptions="Center"
+                    Margin="10,0,0,0"/>
+        </Grid>
+
+        <Frame Grid.Row="1" CornerRadius="10" Padding="0" Margin="10" BorderColor="#333333">
+            <ListView ItemsSource="{Binding Files}"
+                      SelectionMode="None"
+                      RowHeight="60"
+                      BackgroundColor="Transparent"
+                      SeparatorVisibility="None">
+                <ListView.Header>
+                    <Grid Padding="15,10" BackgroundColor="#333333">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="{Binding ShowDetails, Converter={StaticResource BoolToGridLength}, ConverterParameter='150'}" />
+                            <ColumnDefinition Width="{Binding ShowDetails, Converter={StaticResource BoolToGridLength}, ConverterParameter='150'}" />
+                            <ColumnDefinition Width="{Binding ShowDetails, Converter={StaticResource BoolToGridLength}, ConverterParameter='120'}" />
+                            <ColumnDefinition Width="{Binding ShowDetails, Converter={StaticResource BoolToGridLength}, ConverterParameter='120'}" />
+                        </Grid.ColumnDefinitions>
+
+                        <CheckBox Grid.Column="0" IsChecked="{Binding IsAllSelected}" VerticalOptions="Center" HorizontalOptions="Center" />
+                        <Label Grid.Column="1" Text="File Name" FontAttributes="Bold" TextColor="White" />
+                        <Label Grid.Column="2" Text="Creation Date" FontAttributes="Bold" TextColor="White" HorizontalTextAlignment="Center" IsVisible="{Binding ShowDetails}"/>
+                        <Label Grid.Column="3" Text="Modification Date" FontAttributes="Bold" TextColor="White" HorizontalTextAlignment="Center" IsVisible="{Binding ShowDetails}"/>
+                        <Label Grid.Column="4" Text="Uploader" FontAttributes="Bold" TextColor="White" HorizontalTextAlignment="Center" IsVisible="{Binding ShowDetails}"/>
+                        <Label Grid.Column="5" Text="Last Editor" FontAttributes="Bold" TextColor="White" HorizontalTextAlignment="Center" IsVisible="{Binding ShowDetails}"/>
+                    </Grid>
+                </ListView.Header>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:SelectableFileItem">
+                        <ViewCell>
+                            <Grid Padding="15,10">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={x:Reference filesPage}, Path=BindingContext.FileTappedCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Grid.GestureRecognizers>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="{Binding Source={x:Reference filesPage}, Path=BindingContext.ShowDetails, Converter={StaticResource BoolToGridLength}, ConverterParameter='150'}" />
+                                    <ColumnDefinition Width="{Binding Source={x:Reference filesPage}, Path=BindingContext.ShowDetails, Converter={StaticResource BoolToGridLength}, ConverterParameter='150'}" />
+                                    <ColumnDefinition Width="{Binding Source={x:Reference filesPage}, Path=BindingContext.ShowDetails, Converter={StaticResource BoolToGridLength}, ConverterParameter='120'}" />
+                                    <ColumnDefinition Width="{Binding Source={x:Reference filesPage}, Path=BindingContext.ShowDetails, Converter={StaticResource BoolToGridLength}, ConverterParameter='120'}" />
+                                </Grid.ColumnDefinitions>
+
+                                <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}" VerticalOptions="Center" HorizontalOptions="Center" />
+                                <Label Grid.Column="1" Text="{Binding FileName}" TextColor="White" VerticalOptions="Center"/>
+                                <Label Grid.Column="2" Text="{Binding CreationDate, StringFormat='{0:dd.MM.yy HH:mm}'}" TextColor="White" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                                <Label Grid.Column="3" Text="{Binding ModificationDate, StringFormat='{0:dd.MM.yy HH:mm}'}" TextColor="White" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                                <Label Grid.Column="4" Text="{Binding UploaderName}" TextColor="White" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                                <Label Grid.Column="5" Text="{Binding LastEditorName}" TextColor="White" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Frame>
+
+        <StackLayout Grid.Row="2" Orientation="Horizontal" Padding="10" HorizontalOptions="End" Spacing="10">
+            <Button Text="Upload" Command="{Binding UploadFileCommand}" Style="{StaticResource ActionButtonStyle}" />
+            <Button Text="Download" Command="{Binding DownloadFileCommand}" Style="{StaticResource ActionButtonStyle}" />
+            <Button Text="Delete" Command="{Binding DeleteFileCommand}" Style="{StaticResource ActionButtonStyle}" />
+        </StackLayout>
+    </Grid>
+</ContentPage>

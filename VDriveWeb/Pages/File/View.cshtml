@@ -1,0 +1,41 @@
+﻿@page
+@model VDriveWeb.Pages.File.ViewModel
+@{
+    ViewData["Title"] = $"Перегляд: {Model.FileName}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Перегляд: @Model.FileName</h1>
+    <a asp-page="/Index" class="btn btn-secondary">Повернутися до файлів</a>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <div class="alert alert-warning" role="alert">
+        @Model.Message
+    </div>
+}
+else
+{
+    @if (Model.FileType.Equals(".c", StringComparison.OrdinalIgnoreCase))
+    {
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white">Вміст C-файлу</div>
+            <div class="card-body p-0">
+                <pre class="p-3" style="background-color: #f8f9fa; border: 1px solid #dee2e6; max-height: 80vh; overflow: auto;"><code>@Model.FileContent</code></pre>
+            </div>
+        </div>
+    }
+    else if (Model.FileType.Equals(".jpg", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(Model.Base64Image))
+    {
+        <div class="text-center">
+            <img src="data:image/jpeg;base64,@Model.Base64Image" class="img-fluid rounded shadow" alt="Зображення: @Model.FileName" style="max-height: 80vh;" />
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            Для цього типу файлу (@Model.FileType) не підтримується прямий перегляд.
+        </div>
+    }
+}
