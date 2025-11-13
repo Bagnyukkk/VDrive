@@ -32,13 +32,16 @@ jobs:
           ${{ runner.os }}-nuget-
 
     - name: Restore dependencies
+      working-directory: ./VDrive/VDriveAPI
       run: dotnet restore
 
     - name: Build
-      run: dotnet build VDrive/VDriveAPI/VDriveAPI.sln --no-restore --configuration Release
+      working-directory: ./VDrive/VDriveAPI
+      run: dotnet build --no-restore --configuration Release
 
     - name: Run tests
-      run: dotnet test VDrive/VDriveAPI/VDriveAPI.sln --no-build --configuration Release --logger "trx;LogFileName=test-results.trx" --results-directory ./test-results
+      working-directory: ./VDrive/VDriveAPI
+      run: dotnet test --no-build --configuration Release --logger "trx;LogFileName=test-results.trx" --results-directory ./test-results
 
     - name: Upload test results
       if: always()
